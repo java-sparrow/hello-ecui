@@ -75,7 +75,7 @@ define(function (require) {
          * @return {String} “包装”后的文本（具有自动隐藏溢出文本、鼠标悬浮显示完整文本 功能）
          */
         mackTiptool: function (text){
-            return '<div class="textOverflow" title="' + text + '">' + text + '</div>';
+            return '<div class="text-overflow" title="' + text + '">' + text + '</div>';
         }
     };
     

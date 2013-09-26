@@ -1,0 +1,21 @@
+{
+    "name": "rf",
+    "version": "0.2.1",
+    "description": "RigelFE Framework",
+    "contributors": [
+        {
+            "name": "treelite",
+            "email": "c.xinle@gmail.com"
+        },
+        {
+            "name": "sushuang",
+            "email": "sushuang@baidu.com"
+        },
+        {
+            "name": "coocon",
+            "email": "coocon2007@gmail.com"
+        }
+    ],
+    "main": "main",
+    "homepage": "https://github.com/rigelfe/rf"
+}

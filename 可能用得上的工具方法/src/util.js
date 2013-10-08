@@ -4,6 +4,24 @@
  */
 
 define(function (require) {
+    var ui = {
+        /**
+         * @method replaceEcui 使用 新ecui组件 替换 旧ecui组件（主要就是插入新组件的DOM元素，析构和删除旧元素）
+         * @param {ecui.ui} oldEcui 旧ecui组件
+         * @param {ecui.ui} newEcui 新ecui组件（已经初始化后的）
+         */
+        replaceEcui: function (oldEcui, newEcui) {
+            var oldElement = oldEcui.getMain();
+            var newElement = newEcui.getMain();
+            
+            //  将新元素节点插入到DOM中
+            T.dom.insertAfter(newElement, oldElement);
+            //  移除旧组件
+            oldEcui.dispose();
+            T.dom.remove(oldElement);
+        }
+    };
+    
     var select = {
         /**
          * @method setData 根据源数据数组，使用add方法填充select的下拉项，可自定义过滤器，可设置默认值或下拉列表项索引。
@@ -112,8 +130,6 @@ define(function (require) {
                 ]);
             });
             newQueryTabElement.innerHTML = tabHTML.join('');
-            //  插入到dom中
-            T.dom.insertAfter(newQueryTabElement, queryTabElement);
             
             //  初始化为ecui组件
             //  事实证明，ecui.init没有返回已经初始化好的ecui对象。下面用自己加的id重新获取
@@ -127,9 +143,8 @@ define(function (require) {
                 newEcuiQueryTab.setValue(ecuiQueryTab.getValue());
             }
             
-            //  释放内存
-            ecuiQueryTab.dispose();
-            T.dom.remove(queryTabElement);
+            //  在页面上 使用新组件 代替 旧组件
+            ui.replaceEcui(ecuiQueryTab, newEcuiQueryTab);
             
             return newEcuiQueryTab;
         }
@@ -220,6 +235,43 @@ define(function (require) {
         };
     })();
     
+    var treeView = {
+        /**
+         * @method addNodes 根据参数数据，批量添加子节点（包含子节点的无限级子节点）
+         * @param {ecui.ui.TreeView} parentNode 父节点
+         * @param {Array} dataList 格式形如`[{text: '', value:'', children: []}]`。
+         *                  其中，`children`的格式是`dataList`的格式
+         * @param {function=} processText 可选。作用①对子节点的显示文本进行处理；作用②处理`value`。
+         *                  如果`processText`没有返回值，则该参数没有实际作用；
+         *                  如果返回`false`，则不添加该子节点；
+         *                  其它返回值，则作为 子节点的显示文本（不对字符串中包含的html标签进行转义）。
+         *                  函数接收两个参数，分别为`dataList`元素项的`text`和`value`。
+         *                  函数中，`this`指向当前遍历的`dataList`元素项，如：可以访问`this.children`等 没有作为参数传递的值。
+         */
+        addNodes: function recursion(parentNode, dataList, processText) { //  recursion函数名 供递归时 使用
+            T.array.each(dataList, function (item) {
+                var text = item.text;
+                
+                if (typeof processText === 'function') {
+                    text = processText.call(item, item.text, item.value);
+                    
+                    if (text === false) {
+                        return;
+                    }
+                    else if (text === undefined) {
+                        text = item.text;
+                    }
+                }
+                
+                var newNode = parentNode.add(text);
+                
+                if (item.children.length > 0) {
+                    recursion(newNode, item.children, processText);
+                }
+            });
+        }
+    };
+    
     var dom = {
         /**
          * @method mackTiptool 制作【提示工具】（并且通过css类对文本做溢出隐藏处理）。
@@ -259,8 +311,10 @@ define(function (require) {
     return {
         dom: dom,
         
+        ui: ui,
         select: select,
         queryTab: queryTab,
+        treeView: treeView,
         
         date: date
     };

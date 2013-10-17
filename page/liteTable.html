@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>liteTable 表格头生成器</title>
+    <link rel="stylesheet" href="../dep/ecui/2.1.2/dist/ecui.css" />
+    <link rel="stylesheet" href="../dep/rf-css/0.2.1/dist/rf.css" />
+    
+    <script src="../dep/esl/1.6.0/dist/esl.js"></script>
+    <script src="../dep/tangram/1.5.2/dist/tangram.js"></script>
+    <script src="../dep/ecui/2.1.2/dist/ecui.js"></script>
+</head>
+<body>
+    <div style="float: left; ">
+             输入接口对象：
+        <br />
+        <textarea id="fieldsText" cols="80" rows="20">
+            
+            {
+                "ruleName": "规则名称",
+                
+                "ruleDesc": "规则描述",
+                
+                "addTime": "添加时间",
+                
+                "status": "状态"
+            }
+        </textarea>
+    </div>
+    
+    
+    <div style="float: left; padding-left: 30px;">
+        输入模拟值：
+        <br />
+        <textarea id="fieldsData" cols="80" rows="20">
+            
+            [
+                {
+                    "ruleName": "test",
+                    
+                    "ruleDesc": "test ruleDesc",
+                    
+                    "addTime": "2013-10-01 22:23:12",
+                    
+                    "status": "未审批"
+                },
+                
+                {
+                    "ruleName": "test2",
+                    
+                    "ruleDesc": "test2 ruleDesc",
+                    
+                    "addTime": "2013.10.17 22:23:12",
+                    
+                    "status": "审批中"
+                }
+            ]
+        </textarea>
+    </div>
+    
+    
+    <br clear="both" /><br />
+    
+    <span class="ui-button-g" ecui="type:button;id:previewButton;">预览</span>
+    <span class="ui-button-g" ecui="type:button;id:outputCodeButton;">生成js配置代码</span>
+    <span class="ui-button-g" ecui="type:button;id:setDataButton;">应用配置setData试试？</span>
+    <span class="ui-button-g" ecui="type:button;id:customButton;">自定义（设置content、width、align字段）</span>
+    
+    <br /><br />
+    <hr />
+    <br />
+    
+    <div ecui="type:lite-table;id:testFieldsTable"></div>
+    
+    
+    <div ecui="type:form;id:settingForm;hide:true" style="width: 500px;">
+        <label>自定义（设置content、width、align字段）</label>
+        
+        <form id="fieldsForm"></form>
+        
+        <span class="ui-button-g" ecui="type:button;id:outputCodeButton2;">生成js配置代码</span>
+        <span class="ui-button-g" ecui="type:button;id:cancelButton;">取消</span>
+    </div>
+    
+    <div class="footer">
+        © 2013 Baidu (v_lpx)
+    </div>
+    
+<script>
+    // 数据容器
+    var model = {};
+
+    // dom元素容器
+    var view = {};
+
+    /**
+     * 初始化页面
+     */
+    function initView() {
+        view.outputCodeButton = ecui.get('outputCodeButton');
+        view.outputCodeButton2 = ecui.get('outputCodeButton2');
+        view.previewButton = ecui.get('previewButton');
+        view.setDataButton = ecui.get('setDataButton');
+        view.customButton = ecui.get('customButton');
+        view.cancelButton = ecui.get('cancelButton');
+        
+        view.fieldsText = T.dom.g('fieldsText');
+        view.fieldsData = T.dom.g('fieldsData');
+        view.fieldsForm = T.dom.g('fieldsForm');
+        
+        view.testFieldsTable = ecui.get('testFieldsTable');
+        view.settingForm = ecui.get('settingForm');
+        
+        
+    }
+    
+    function getFields() {
+        var fields = T.json.parse(view.fieldsText.value);
+        
+        var outputFields = [];
+        var quot = '\'';
+        var dblQuot = '\"';
+        
+        var fieldsForm = view.fieldsForm;
+        
+        T.object.each(fields, function (value, key) {
+            var content = quot + key + quot;
+            
+            var radio = fieldsForm.elements[key];
+            if (radio) {
+                var contentType = radio.value;
+                
+                if (contentType === 'string') {
+                    content = quot + key + quot;
+                }
+                else if (contentType === 'function'){
+                    content = [
+                        'function (item, index) {',
+                            'return index + 1;  /* 自增序号 */',
+                        '}'
+                    ].join('');
+                }
+            }
+            
+            outputFields.push([
+                '{',
+                    'title: ', quot, value, quot, ',',
+                    'content: ', content, '',
+                '}'
+            ].join(''));
+        });
+        
+        return '[' + outputFields.join(',\n') + ']';
+    }
+    
+    /**
+     * 页面事件绑定
+     */
+    function bindEvents() {
+        //  【预览】按钮
+        view.previewButton.onclick = function () {
+            view.testFieldsTable.setFields(T.json.parse(getFields()));
+            //   补充置空表格数据，防止上回操作的遗留数据影响
+            view.testFieldsTable.setData([]);
+        };
+        
+        //  【生成js配置代码】按钮
+        view.outputCodeButton.onclick = function () {
+            ecui.alert(getFields());
+        };
+        view.outputCodeButton2.onclick = function () {
+            view.settingForm.hide();
+            
+            ecui.alert(getFields());
+        };
+        
+        //  【setData试试】按钮
+        view.setDataButton.onclick = function () {
+            var fieldsData = view.fieldsData.value;
+            
+            //  每次setData之前，更新一下表头数据
+            view.testFieldsTable.setFields(T.json.parse(getFields()));
+            
+            view.testFieldsTable.setData(T.json.parse(fieldsData));
+        };
+        
+        //  【自定义】按钮
+        view.customButton.onclick = function () {
+            var fields = T.json.parse(view.fieldsText.value);
+            
+            var li = [];
+        
+            T.object.each(fields, function (value, key) {
+                //TODO:要保留上次radio的默认值
+                li.push([
+                    '<li>',
+                        value, '<br />',
+                            ' &nbsp; &nbsp; content字段：',
+                                    '<label>string <input type="radio" name="', key, '" value="string" /></label> ',
+                                    '<label>function <input type="radio" name="', key, '" value="function" /></label>',
+                            '<br />',
+                            ' &nbsp; &nbsp; 包含width？',
+                            '<br />',
+                            ' &nbsp; &nbsp; 包含align？',
+                    '</li>'
+                ].join(''));
+            });
+            
+            view.fieldsForm.innerHTML = '<ul>' + li + '</ul>';
+            
+            view.settingForm.show();
+            // view.settingForm.showModal(0.5);
+            view.settingForm.center();
+        };
+        
+        //  自定义字段设置 弹出窗【取消】按钮
+        view.cancelButton.onclick = function () {
+            view.settingForm.hide();
+        };
+    }
+    
+    initView();
+    bindEvents();
+</script>
+</body>
+</html>

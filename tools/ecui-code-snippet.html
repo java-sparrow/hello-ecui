@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ecui 代码片段</title>
+    <link rel="stylesheet" href="../dep/ecui/2.1.2/dist/ecui.css" />
+    
+    <script src="../dep/tangram/1.5.2/dist/tangram.js"></script>
+    <script src="../dep/ecui/2.1.2/dist/ecui.js"></script>
+</head>
+<body>
+    <h1>ecui 代码片段</h1>
+    
+    <div ecui="type:lite-table;id:tableName Table">表格 liteTable</div>
+    
+    
+    <!-- 文本项 -->
+    <label class="label" ecui="type:label;for:dataName">文本label带for</label>
+                <label class="label" ecui="type:label;">文本label不带for</label>
+    
+    
+    <!-- 文本框 -->
+    <span ecui="type:input;name:postParamName;id:ecuiInputId;tip:输入文本...">单行文本框</span>
+    
+    <span ecui="type:textarea;id:ecuiTextareaId;name:postParamName;">多行文本框</span>
+    
+    <div class="hide">
+        <span ecui="type:input;name:postParamName;id:ecuiInputId;">隐藏域</span>
+    </div>
+    
+    
+    <!-- 单选下拉框 -->
+    <span class="ui-button-g" ecui="type:button;id:okButton">确定按钮</span>
+                    <span ecui="type:button;id:cancelButton">取消按钮</span>
+    
+    <div ecui="type:select;id:selectName Select;name:postParamName;value:1">
+        <div ecui="value:1">下拉项一</div>
+        <div ecui="value:2">下拉项二</div>
+    </div>
+    
+    <div ecui="type:select;id:selectName Select;name:postParamName;value:1">
+        <!-- 动态下拉列表由js填充 -->
+    </div>
+    
+    <!-- 多选下拉框 -->
+    
+    
+    
+    
+    
+    <!-- 弹出窗 -->
+    <div ecui="type:form;id:formName Form;hide:true">
+        <label>窗体标题</label>
+        初始化内容
+        
+        <span class="ui-button-g" ecui="type:button;id:okButton">确定</span>
+        <span ecui="type:button;id:cancelButton">取消</span>
+    </div>
+    
+    
+    <!-- 需要发送的表单 -->
+    <div class="form" id="actionName PostForm">
+        <div class="groups">
+            <label class="label" ecui="type:label;">文本label不带for</label>
+        </div>
+        
+        
+        <div class="group">
+            <span class="ui-button-g" ecui="type:button;id:okButton">提交</span>
+        </div>
+        <div class="group">
+            <span ecui="type:button;id:cancelButton">取消</span>
+        </div>
+    </div>
+    
+    
+    <!-- 分页 -->
+    <div ecui="type:custom-pager;id:pager;pageOptions:15,30,50,100;hideTotal:false;hideSize:false"></div>
+    
+    
+    
+    <pre>
+    控件状态：
+    不可用 ;disabled:ture
+    
+    </pre>
+    
+    <hr />
+    
+    <pre>
+    rf.css中，可利用的css类名
+    文本相关
+    .strong
+    .bold
+    
+    .text-left
+    .text-center
+    .text-right
+    
+    .text-red
+    .text-green
+    .muted                     (浅灰色) { color: #999999; }
+    
+    .text-info
+    .text-success
+    .text-warning
+    .text-error
+    
+    
+    布局相关
+    .pull-right                       { float: right; }
+    .pull-left                        { float: left; }
+    
+    .clearfix
+    .display-inline-block
+    .box-1
+    
+    .hide
+    .show
+    .invisible                        { visibility: hidden; }
+    
+    
+    表单相关
+    .form .groups                     { margin-bottom: 10px; }
+    .form .group       (inline-block) { margin-bottom: 10px; margin-right: 10px; }
+    .form .group .label               { width: 70px; }
+    .form .group .label-2             { width: 90px; }
+    .form .group .label-3             { width: 110px; }
+    
+    .form .group .control             { width: 200px; }
+    .form .group .control-2           { width: 220px; }
+    .form .group .control-3           { width: 250px; }
+
+    
+    间距相关
+    .padding-10                       { padding: 10px; }
+    
+    .padding-right-5
+    .padding-right-10
+    .padding-right-20
+    .padding-right-50
+    
+    .padding-left-5
+    .padding-left-10
+    .padding-left-20
+    .padding-left-50          (暂不可用) { padding-right: 50px; }
+    
+    .margin-10                         { margin: 10px; }
+    
+    .margin-right-5
+    .margin-right-10
+    .margin-right-20
+    .margin-right-50
+    
+    .margin-left-5
+    .margin-left-10
+    .margin-left-20
+    .margin-left-50           (暂不可用) { margin-right: 50px; }
+    
+    
+    
+    补充自定义css类
+    .text-overflow {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    
+    </pre>
+    
+    <hr />
+    
+    <pre>
+    模拟数据验证模板：
+    
+    </pre>
+    
+</body>
+</html>

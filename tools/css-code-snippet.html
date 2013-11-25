@@ -11,8 +11,8 @@
 <body>
     <h1>css 常用类</h1>
     
+    <h2>rf.css中，可利用的css类名</h2>
     <pre>
-    rf.css中，可利用的css类名
     文本相关
     .strong
     .bold
@@ -81,15 +81,23 @@
     .margin-left-20
     .margin-left-50           (暂不可用) { margin-right: 50px; }
     
+    </pre>
     
-    
-    补充自定义css类
+    <h2>补充自定义css类</h2>
+    <pre>
     .text-overflow {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
     
+    /* 使用css去掉【时间粒度】文本、【时间粒度】下拉框和 【选择模式】 区域（setDatasource方法暂时不支持去掉） */
+    .ui-x-calendar-head-text,
+    .ui-x-calendar-slt-timetype,
+    .ui-x-calendar-layer-selmode {
+        /* 【时间粒度】下拉框 会被设置行内样式【display: inline-block】，所以这里提高一下优先级 */
+        display: none !important;
+    }
     </pre>
 </body>
 </html>

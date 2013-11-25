@@ -13,25 +13,69 @@
     
     <!-- 表格 -->
     <pre>
+        //  设置表格头与表格域信息
+        view.ecuiTable.setFields([
+            {
+                title: '序号',
+                content: function (item, index) {
+                    return index + 1;
+                },
+                width: 50,
+                align: 'center'
+            },
+            {
+                title: '表头名',
+                content: 'fieldName',
+                align: 'center'
+            },
+            {
+                title: '表头名',
+                content: function (item) {
+                    return makeTiptool(item.fieldName);
+                },
+                align: 'center'
+            }
+        ]);
+        
         表格的操作列js代码
         [
             '<a href="#" class="link-option" ',
-            'data-itemData="', item.data, '">操作项名称</a>'
+                'data-itemData="', item.data, '">操作项名称</a>',
+            '<a href="#" class="link-option2 margin-left-20" ',
+                'data-itemData="', item.data, '">操作项名称2</a>'
         ].join('');
         
         
+        //  异步获取 列表数据（填充表格）
+        function getDataListToTable() {
+            ajax.post(
+                ajaxURL.MOUDEL_ACTION,
+                'reqParam=' + encodeURIComponent(T.json.stringify({ param: 'value' })),
+                function (data) {
+                    //  更新表格数据
+                    view.ecuiTable.setData(data.dataList);
+                }
+            );
+        }
+        //  页面加载时先做一次异步查询 以填充表格数据
+        getDataListToTable();
+        
         绑定表格操作列事件代码
+        //  绑定 表格操作列/链接 事件
         T.event.on(
             ecuiTable.getMain(),
             'click',
             function (e) {
                 var target = T.event.getTarget(e);
-                var itemIndex = T.dom.getAttr(target, 'data-itemIndex');
+                var dataId = T.dom.getAttr(target, 'data-dataId');
                 
                 //  绑定 表格操作列【option】功能 点击事件
                 if (T.dom.hasClass(target, 'link-option')) {
                     var itemData = T.dom.getAttr(target, 'data-itemData');
                 }
+                
+                //  T.event.stopPropagation(e);
+                //  T.event.preventDefault(e);
             }
         );
     </pre>
@@ -41,7 +85,7 @@
     
     
     <pre>
-        require及引用初始化
+        require依赖 及 view引用初始化
         
         var Form = require('rf/form');
         var ajax = require('rf/ajax');
@@ -49,14 +93,19 @@
         var constant = require('common/constant');
         var ajaxURL = constant.ajaxURL;
         var ruleURL = constant.ruleURL;
-    
+        
         var util = require('common/util');
-        var makeTiptool = util.dom.mackTiptool;
+        var makeTiptool = util.dom.makeTiptool;
         
         <hr />
         
         view.element = T.dom.g('elementId');
         view.ecui = ecui.get('ecuiId');
+        
+        view = {
+            element: T.dom.g('elementId'),
+            ecui: ecui.get('ecuiId')
+        };
         
         view.actionNamePostForm = new Form(
             T.dom.g('actionNamePostForm'),
@@ -73,27 +122,32 @@
     
     <pre>
         批量设置select选项
+        //  填充 ecuiSelect 下拉框选项
         util.select.setData({
             ecuiSelect: view.ecuiSelect,
-            dataList: data.dataList,
-            filter: function (){
-                
-            }
+            dataList: data.dataList
+            ,setDefaultValue: false
+            ,filter: function () {}
         });
+        
+        //  数组到Map的格式转换
+        var xxxMap = util.tools.dataListToMap(data.dataList);
         
         <hr />
         
         发送ajax请求（通过From）
-        view.actionNamePostForm.submit({
-            onsubmit: function (reqParam) {
-                reqParam.postParamName = 'new value';
-            },
-            onsuccess: function (data) {
-                //  去掉页面上的验证错误信息
-                view.actionNamePostForm.setError('');
+        view.actionNamePostForm.submit(
+            {
+                onsubmit: function (reqParam) {
+                    reqParam.postParamName = 'newValue';
+                },
+                onsuccess: function (data) {
+                    //  去掉页面上的验证错误信息
+                    view.actionNamePostForm.setError('');
+                }
+                // ,onfailure: function (ejsonObj) {}
             }
-            // ,onfailure: function (ejsonObj) {}
-        });
+        );
         
         发送简单ajax请求（不通过Form）
         ajax.post(
@@ -111,16 +165,114 @@
         <hr />
         
         ecui.confirm(
-            '<span class="text-warning">保存成功！</span>',
+            '<span class="text-success">保存成功！</span>',
             function () {
                 console.log('ok');
-            },
-            function () { console.log('cancel'); }
+            }
+            ,function () { console.log('cancel'); }
+        );
+        ecui.alert(
+            '<span class="text-success">保存成功！</span>',
+            function () {
+                console.log('ok');
+            }
         );
         
-        //  绑定【XXXX】按钮的点击事件
+        <hr />
+        
+        //  绑定 XXX面板 【XXX】按钮 点击事件
         view.ecui.onclick = function () {
             
+        };
+        //  绑定 XXX面板 【XXX】多选下拉框 选项改变事件
+        view.ecui.onchange = function () {
+            
+        };
+        
+        <hr />
+        
+        /*
+         * 下面的分页，需要配合model.page使用
+         */
+        //  绑定页数的点击事件
+        view.pager.onchange = function (goPage, size) {
+            model.page.page = goPage;
+            model.page.size = size;
+            
+            getDataListToTable();
+        };
+        //  绑定切换每页记录数事件
+        view.pager.onpagesizechange = function (size) {
+            model.page.size = size;
+            //  更改每页显示记录数之后，需要重新将当前页数设置为 1
+            model.page.goFirstPage = true;
+            
+            getDataListToTable();
+        };
+        //  （这个判断是写在请求表格数据之前）更改每页显示记录数之后，需要重新将当前页数设置为 1
+        if (model.page.goFirstPage) {
+            model.page.page = 1;
+            model.page.goFirstPage = false;
+        }
+        //  发送请求数据时，带上`page: model.page`参数，就可以发送分页数据
+        //  （一般是在表格请求数据返回后）渲染分页
+        view.pager.render(
+            //  重点！！必须保证页码是数字，否则第5页的下一页就变成第51页了
+            +data.page.page,
+            data.page.total,
+            data.page.size
+        );
+        
+        <hr />
+        
+        //  显示弹出窗
+        view.formNameForm.showModal(0.5);
+        view.formNameForm.center();
+        
+        //  绑定 弹出窗 【确定/取消】按钮 事件
+        view.okButton/cancelButton.onclick = function () {
+            view.formNameForm.hide();
+        };
+        
+        <hr />
+        
+        //  复杂日历相关
+        model.calendarOption = {
+            headText : '时间范围',
+            blankText : '请选择时间',
+            rangeLinkStr : ' 至 ',
+            weekLinkStr : ' ~ ',
+            disablePreviousBtn : false,
+            disableNextBtn : false,
+            disableCancelBtn : true,
+            timeTypeList : [
+                {
+                    text : '日',
+                    value : 'D'
+                },
+                {
+                    text : '月',
+                    value : 'M'
+                },
+                {
+                    text : '季',
+                    value : 'Q'
+                }
+            ],
+            timeType : 'Q',
+            timeTypeOpt: {
+                D: model.calendarTimeTypeOpt,
+                M: model.calendarTimeTypeOpt,
+                Q: model.calendarTimeTypeOpt
+            }
+        };
+        view.myCalendar.setDatasource(model.calendarOption);
+        //  绑定日历 日期切换事件（包括时间粒度切换）
+        view.myCalendar.onchange = function (date) {
+            var stdate = T.date.format(date[0], 'yyyy-MM-dd');
+            
+            //  刷新表格数据
+            getDataListToTable();
         };
         
         <hr />
@@ -130,33 +282,23 @@
             console.log(arguments);
         };
         
+        <hr />
         
-        T.array.each(items, function (item) {
-            
-        });
+        
+        T.array.each(
+            items,
+            function (item) {
+                
+            }
+        );
     </pre>
     
     
+    <hr />
+    
+    
     <pre>
-    模拟数据验证模板：
-    
-    验证规则模版：
-    if (require('../feConfig/testConfig').getLocalValidate()) {
-        return {
-            "postName": [
-                {
-                    "type": "regexp",
-                    "msg": "字段'postName'必须为整数类型",
-                    "rule": "^(\\+|-)?[1-9]\\d*$"
-                }
-            ]
-        };
-    }
-    else {
-        return;
-    }
-    
-    
+    //  Tangram常用方法
     T.dom.addClass
     T.dom.removeClass
     T.dom.getAttr()

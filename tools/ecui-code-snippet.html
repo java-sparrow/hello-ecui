@@ -13,54 +13,6 @@
     
     <!-- 表格 -->
     <div ecui="type:lite-table;id:tableName Table">表格 liteTable</div>
-    <pre>
-        表格字段设置代码
-        {
-            title: '模版描述',
-            content: function (item) {
-                return mackTiptool(item.ruleDesc);
-            },
-            align: 'center'
-        },
-        {
-            title: '状态',
-            content: function (item) {
-                return model.ruleStatus[item.ruleStatus];
-            },
-            width: 80,
-            align: 'center'
-        },
-        {
-            title: '更新时间',
-            content: 'lastUpdateTime',
-            align: 'center'
-        }
-        
-        <hr />
-        
-        表格的操作列js代码
-        [
-            '<a href="#" class="link-option" ',
-            'data-itemData="', item.data, '">操作项名称</a>'
-        ].join('');
-        
-        <hr />
-        
-        绑定表格操作列事件代码
-        T.event.on(
-            ecuiTable.getMain(),
-            'click',
-            function (e) {
-                var target = T.event.getTarget(e);
-                var itemIndex = T.dom.getAttr(target, 'data-itemIndex');
-                
-                //  绑定 表格操作列【option】功能 点击事件
-                if (T.dom.hasClass(target, 'link-option')) {
-                    var itemData = T.dom.getAttr(target, 'data-itemData');
-                }
-            }
-        );
-    </pre>
     
     
     <!-- 文本项 -->
@@ -71,42 +23,57 @@
     <!-- 文本框 -->
     <span ecui="type:input;name:postParamName;id:ecuiInputId;tip:输入文本...">单行文本框</span>
     
-    <span ecui="type:textarea;id:ecuiTextareaId;name:postParamName;tip:输入文本...">多行文本框</span>
+    <span ecui="type:textarea;name:postParamName;id:ecuiTextareaId;tip:输入文本...">多行文本框</span>
     
     <div class="hide">
         <span ecui="type:input;name:postParamName;id:ecuiInputId;">隐藏域</span>
     </div>
     
     
-    <!-- 单选下拉框 -->
+    <!-- 按钮 -->
     <span class="ui-button-g" ecui="type:button;id:okButton">确定按钮</span>
                     <span ecui="type:button;id:cancelButton">取消按钮</span>
     
-    <div ecui="type:select;id:selectName Select;name:postParamName;value:1">
+    
+    <!-- 单选下拉框 -->
+    <div ecui="type:select;id:selectName Select;name:postParamName;value:1" style="width: 140px;">
         <div ecui="value:1">下拉项一</div>
         <div ecui="value:2">下拉项二</div>
     </div>
     
-    <div ecui="type:select;id:selectName Select;name:postParamName;value:1">
+    <div ecui="type:select;id:selectName Select;name:postParamName;" style="width: 140px;">
         <!-- 动态下拉列表由js填充 -->
     </div>
     
     
     <!-- 多选下拉框 -->
-    <div ecui="type:multi-select;id:selectName Select;name:postParamName;value:1">
+    <div ecui="type:multi-select;id:selectName Select;name:postParamName;value:1" style="width: 140px;">
         <div ecui="value:1">下拉项一</div>
         <div ecui="value:2">下拉项二</div>
     </div>
     
-    <div ecui="type:multi-select;id:selectName Select;name:postParamName;value:1">
+    <div ecui="type:multi-select;id:selectName Select;name:postParamName;" style="width: 140px;">
         <!-- 动态下拉列表由js填充 -->
     </div>
     
     
     <!-- 复选框 -->
-    <span ecui="type:checkbox;id:boxName Checkbox;name:postParamName;"></span>
+    <span ecui="type:checkbox;id:boxName Checkbox;name:postParamName;value:1"></span>
     <label ecui="type:label;for:boxName Checkbox">简单复选框不带联动</label>
     
+    <!-- 联动复选框 -->
+    <span ecui="type:checkbox;id:parentCheckbox"></span>
+    <label ecui="type:label;for:parentCheckbox">复选框带联动（父级）</label>
+    <br />
+    <span ecui="type:checkbox;id:childCheckbox_1;subject:parentCheckbox;checked:true;value:child_1"></span>
+    <label ecui="type:label;for:childCheckbox_1;">复选框带联动（子级_1）</label>
+    <span ecui="type:checkbox;id:childCheckbox_2;subject:parentCheckbox;value:child_2"></span>
+    <label ecui="type:label;for:childCheckbox_2;">复选框带联动（子级_2）</label>
+    
+    
+    <!-- 单选按钮 -->
+    <span ecui="type:radio;id:radioName Radio;name:postParamName;value:1"></span>
+    <label ecui="type:label;for:radioName Radio">单选按钮</label>
     
     
     <!-- 弹出窗 -->
@@ -141,13 +108,24 @@
     <div ecui="type:custom-pager;id:pager;pageOptions:15,30,50,100;hideTotal:false;hideSize:false"></div>
     
     
-    <!-- tab -->
+    <!-- 复杂日历（使用js初始化） -->
+    <div id="myCalendar" class="ui-x-calendar"></div>
+    
+    <!-- 复杂日历（自动初始化） -->
+    <div ecui="type:x-calendar;id:myCalendar"></div>
+    
+    
+    <!-- tab标签头 -->
     <div ecui="type:query-tab;id:tabName Tab;value:123">
         <span ecui="value:123">tab头标题1</span>
         <span ecui="value:456">tab头标题2</span>
     </div>
     <!-- tab内容页 -->
-    <div class="tabContent"></div>
+    <div class="tabContent padding-10">
+        <div id="xxxTabPanel" class="hide">
+            xxxTab div
+        </div>
+    </div>
     
     
     <hr />
